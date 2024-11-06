@@ -1,5 +1,6 @@
 package com.ipcb.milleuro;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -59,6 +60,17 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE " + QUESTION_TABLE);
         db.execSQL("DROP TABLE " + QUESTION_ANSWER_TABLE);
         onCreate(db);
+    }
+
+    void addQuestion(Question question){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+
+        cv.put("id", question.getId());
+        cv.put("questionText", question.getQuestionText());
+
+
+        db.insert(QUESTION_TABLE, null, cv);
     }
 
     public List<Difficulty> getDifficulties() {
