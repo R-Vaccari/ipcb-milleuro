@@ -96,12 +96,17 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public List<Question> getQuestions() {
         List<Question> results = new ArrayList<>();
-        try (Cursor cursor = getAllFromTable(ANSWER_TABLE)) {
+
+
+        try (Cursor cursor = getAllFromTable(QUESTION_TABLE)) {
+            final int difficultyId = cursor.getInt(4);
+            final Difficulty difficulty = getDifficultyById(difficultyId);
+
             results.add(new Question(cursor.getInt(0),
                     cursor.getString(1),
                     null,
                     null,
-                    null,
+                    difficulty,
                     cursor.getInt(2)));
         }
 
@@ -119,14 +124,20 @@ public class DBHelper extends SQLiteOpenHelper {
                 null);
     }
 
-    private Cursor getDifficultyById(int id) {
+    private Difficulty getDifficultyById(int id) {
         final SQLiteDatabase db = this.getReadableDatabase();
-        return db.query(DIFF_TABLE,
+        try (Cursor cursor = db.query(DIFF_TABLE,
                 null,
                 "id = " + id,
                 null,
                 null,
                 null,
-                null);
+                null)) {
+            if (cursor.moveToFirst())
+                return new Difficulty(cursor.getInt(0),
+                    cursor.getInt(1),
+                    cursor.getString(2));
+            else return null;
+        }
     }
 }
