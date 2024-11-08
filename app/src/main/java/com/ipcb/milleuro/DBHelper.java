@@ -49,6 +49,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + QUESTION_ANSWER_TABLE + "("
                 + "questionId INTEGER, "
                 + "answerId INTEGER,"
+                + "FOREIGN KEY (questionId) REFERENCES Question(id),"
+                + "FOREIGN KEY (answerId) REFERENCES Answer(id),"
                 + "PRIMARY KEY (questionId, answerId))");
     }
 
@@ -84,16 +86,21 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public List<Question> getQuestions() {
         List<Question> results = new ArrayList<>();
+        List<Answer> possibleAnswer = new ArrayList<>();
 
 
         try (Cursor cursor = getAllFromTable(QUESTION_TABLE)) {
             final int difficultyId = cursor.getInt(4);
+            final int correctAnswerId = cursor.getInt(3);
             final Difficulty difficulty = getDifficultyById(difficultyId);
+            //final Answer answer = getAnswers(); possiveis respostas aqui!
+            final Answer correctAnswer = getCorrectAnswerById(correctAnswerId);
+
 
             results.add(new Question(cursor.getInt(0),
                     cursor.getString(1),
                     null,
-                    null,
+                    correctAnswer,
                     difficulty,
                     cursor.getInt(2)));
         }
@@ -125,6 +132,22 @@ public class DBHelper extends SQLiteOpenHelper {
                 return new Difficulty(cursor.getInt(0),
                     cursor.getInt(1),
                     cursor.getString(2));
+            else return null;
+        }
+    }
+
+    private Answer getCorrectAnswerById(int id) {
+        final SQLiteDatabase db = this.getReadableDatabase();
+        try (Cursor cursor = db.query(ANSWER_TABLE,
+                null,
+                "id = " + id,
+                null,
+                null,
+                null,
+                null)) {
+            if (cursor.moveToFirst())
+                return new Answer(cursor.getInt(0),
+                        cursor.getString(2));
             else return null;
         }
     }
