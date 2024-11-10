@@ -51,6 +51,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + QUESTION_ANSWER_TABLE + "("
                 + "questionId INTEGER, "
                 + "answerId INTEGER,"
+                + "FOREIGN KEY (questionId) REFERENCES Question(id),"
+                + "FOREIGN KEY (answerId) REFERENCES Answer(id),"
                 + "PRIMARY KEY (questionId, answerId))");
     }
 
@@ -86,16 +88,27 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public List<Question> getQuestions() {
         List<Question> results = new ArrayList<>();
+        List<Answer> possibleAnswer = new ArrayList<>();
+
 
 
         try (Cursor cursor = getAllFromTable(QUESTION_TABLE)) {
             final int difficultyId = cursor.getInt(4);
+            final int correctAnswerId = cursor.getInt(3);
+            final int questionId = cursor.getInt(0);
+            final String questionText = cursor.getString(1);
+            final int questionValue = cursor.getInt(2);
+
+            //Getters
             final Difficulty difficulty = getDifficultyById(difficultyId);
+            final Answer correctAnswer = getCorrectAnswerById(correctAnswerId);
+            Question question = new Question(questionId, questionText, (Set<Answer>) possibleAnswer, correctAnswer, difficulty, questionValue);
+            final Set<Answer> answers = getAvailableAnswers(question);
 
             results.add(new Question(cursor.getInt(0),
                     cursor.getString(1),
-                    null,
-                    null,
+                    answers,
+                    correctAnswer,
                     difficulty,
                     cursor.getInt(2)));
         }
@@ -162,5 +175,54 @@ public class DBHelper extends SQLiteOpenHelper {
                     cursor.getInt(1),
                     cursor.getString(2));
         }
+    }
+
+    private Answer getCorrectAnswerById(int id) {
+        final SQLiteDatabase db = this.getReadableDatabase();
+        try (Cursor cursor = db.query(ANSWER_TABLE,
+                null,
+                "id = " + id,
+                null,
+                null,
+                null,
+                null)) {
+            if (cursor.moveToFirst())
+                return new Answer(cursor.getInt(0),
+                        cursor.getString(2));
+            else return null;
+        }
+    }
+
+    private Set<Answer> getAvailableAnswers(Question question) {
+        final SQLiteDatabase db = this.getReadableDatabase();
+        final Set<Answer> set = new HashSet<>(4);
+        try (Cursor cursor = db.query(QUESTION_ANSWER_TABLE,
+                null,
+                "questionId = " + question.getId(),
+                null,
+                null,
+                null,
+                null)) {
+
+            if (cursor.moveToFirst()) {
+                do {
+                    try (Cursor answerCursor = db.query(ANSWER_TABLE,
+                            null,
+                            "id = " + cursor.getInt(1), //trocar por retornar um TEXT e nao UM INT
+                            null,
+                            null,
+                            null,
+                            null)) {
+                        if (answerCursor.moveToFirst()) {
+                            do {
+                                set.add(new Answer(answerCursor.getInt(0),
+                                        answerCursor.getString(1)));
+                            } while (answerCursor.moveToNext());
+                        }
+                    }
+                } while (cursor.moveToNext());
+            }
+        }
+        return set;
     }
 }
