@@ -13,7 +13,9 @@ import com.ipcb.milleuro.model.Difficulty;
 import com.ipcb.milleuro.model.Question;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -89,17 +91,23 @@ public class DBHelper extends SQLiteOpenHelper {
         List<Answer> possibleAnswer = new ArrayList<>();
 
 
+
         try (Cursor cursor = getAllFromTable(QUESTION_TABLE)) {
             final int difficultyId = cursor.getInt(4);
             final int correctAnswerId = cursor.getInt(3);
-            final Difficulty difficulty = getDifficultyById(difficultyId);
-            //final Answer answer = getAnswers(); possiveis respostas aqui!
-            final Answer correctAnswer = getCorrectAnswerById(correctAnswerId);
+            final int questionId = cursor.getInt(0);
+            final String questionText = cursor.getString(1);
+            final int questionValue = cursor.getInt(2);
 
+            //Getters
+            final Difficulty difficulty = getDifficultyById(difficultyId);
+            final Answer correctAnswer = getCorrectAnswerById(correctAnswerId);
+            Question question = new Question(questionId, questionText, (Set<Answer>) possibleAnswer, correctAnswer, difficulty, questionValue);
+            final Set<Answer> answers = getAvailableAnswers(question);
 
             results.add(new Question(cursor.getInt(0),
                     cursor.getString(1),
-                    null,
+                    answers,
                     correctAnswer,
                     difficulty,
                     cursor.getInt(2)));
@@ -150,5 +158,38 @@ public class DBHelper extends SQLiteOpenHelper {
                         cursor.getString(2));
             else return null;
         }
+    }
+
+    private Set<Answer> getAvailableAnswers(Question question) {
+        final SQLiteDatabase db = this.getReadableDatabase();
+        final Set<Answer> set = new HashSet<>(4);
+        try (Cursor cursor = db.query(QUESTION_ANSWER_TABLE,
+                null,
+                "questionId = " + question.getId(),
+                null,
+                null,
+                null,
+                null)) {
+
+            if (cursor.moveToFirst()) {
+                do {
+                    try (Cursor answerCursor = db.query(ANSWER_TABLE,
+                            null,
+                            "id = " + cursor.getInt(1), //trocar por retornar um TEXT e nao UM INT
+                            null,
+                            null,
+                            null,
+                            null)) {
+                        if (answerCursor.moveToFirst()) {
+                            do {
+                                set.add(new Answer(answerCursor.getInt(0),
+                                        answerCursor.getString(1)));
+                            } while (answerCursor.moveToNext());
+                        }
+                    }
+                } while (cursor.moveToNext());
+            }
+        }
+        return set;
     }
 }
