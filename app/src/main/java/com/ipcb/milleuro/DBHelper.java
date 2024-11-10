@@ -13,7 +13,9 @@ import com.ipcb.milleuro.model.Difficulty;
 import com.ipcb.milleuro.model.Question;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -112,6 +114,41 @@ public class DBHelper extends SQLiteOpenHelper {
                 null);
     }
 
+    private Set<Answer> getAvailableAnswers(Question question) {
+        final SQLiteDatabase db = this.getReadableDatabase();
+        final Set<Answer> set = new HashSet<>(4);
+        try (Cursor cursor = db.query(QUESTION_ANSWER_TABLE,
+                null,
+                "questionId = " + question.getId(),
+                null,
+                null,
+                null,
+                null)) {
+
+            if (cursor.moveToFirst()) {
+                do {
+                    try (Cursor answerCursor = db.query(ANSWER_TABLE,
+                            null,
+                            "id = " + cursor.getInt(1),
+                            null,
+                            null,
+                            null,
+                            null)) {
+                        if (answerCursor.moveToFirst()) {
+                            do {
+                                set.add(new Answer(answerCursor.getInt(0),
+                                        answerCursor.getString(1)));
+                            } while (answerCursor.moveToNext());
+                        }
+                    }
+                } while (cursor.moveToNext());
+            }
+        }
+
+        return set;
+    }
+
+
     private Difficulty getDifficultyById(int id) {
         final SQLiteDatabase db = this.getReadableDatabase();
         try (Cursor cursor = db.query(DIFF_TABLE,
@@ -121,11 +158,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 null,
                 null,
                 null)) {
-            if (cursor.moveToFirst())
-                return new Difficulty(cursor.getInt(0),
+            return new Difficulty(cursor.getInt(0),
                     cursor.getInt(1),
                     cursor.getString(2));
-            else return null;
         }
     }
 }
