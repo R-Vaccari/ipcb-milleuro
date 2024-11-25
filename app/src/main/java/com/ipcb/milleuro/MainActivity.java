@@ -28,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        btnStart.findViewById(R.id.Main_btnStart);
-        txtName.findViewById(R.id.Main_txtName);
+        btnStart = findViewById(R.id.Main_btnStart);
+        txtName= findViewById(R.id.Main_txtName);
 
         btnStart.setOnClickListener(view -> {
             //String mensagem = "Este texto é para abrir com um bloco notas!";
