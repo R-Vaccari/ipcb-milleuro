@@ -20,14 +20,17 @@ import java.util.Set;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    public DBHelper(@Nullable Context context, @Nullable String name, int version, @NonNull SQLiteDatabase.OpenParams openParams) {
-        super(context, name, version, openParams);
-    }
-
-    private static final String DIFF_TABLE = "Difficulty",
+    private static final int DATABASE_VERSION = 2;
+    private static final String
+                                DATABASE_NAME = "Milleuro",
+                                DIFF_TABLE = "Difficulty",
                                 ANSWER_TABLE = "Answer",
                                 QUESTION_TABLE = "Question",
                                 QUESTION_ANSWER_TABLE = "QuestionAnswer";
+
+    public DBHelper(@Nullable Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
