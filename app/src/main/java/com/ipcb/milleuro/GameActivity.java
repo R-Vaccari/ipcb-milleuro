@@ -26,9 +26,7 @@ public class GameActivity extends AppCompatActivity {
             return insets;
         });
 
-        Bundle extras = getIntent().getExtras();
-        SpannableString playerName = (SpannableString) extras.get("PlayerName");
         txtName = findViewById(R.id.Game_txtName);
-        txtName.setText(playerName);
+        txtName.setText(getIntent().getStringExtra("PlayerName"));
     }
 }

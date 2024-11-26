@@ -2,7 +2,6 @@ package com.ipcb.milleuro;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextPaint;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -32,12 +31,8 @@ public class MainActivity extends AppCompatActivity {
         txtName= findViewById(R.id.Main_txtName);
 
         btnStart.setOnClickListener(view -> {
-            //String mensagem = "Este texto é para abrir com um bloco notas!";
-
             Intent openGame = new Intent(this, GameActivity.class);
-            openGame.setAction(Intent.ACTION_SEND);
-            openGame.putExtra("PlayerName", txtName.getText());
-
+            openGame.putExtra("PlayerName", txtName.getText().toString());
             startActivity(openGame);
         });
     }
