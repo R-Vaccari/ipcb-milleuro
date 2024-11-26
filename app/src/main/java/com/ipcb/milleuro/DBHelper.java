@@ -98,26 +98,36 @@ public class DBHelper extends SQLiteOpenHelper {
         return results;
     }
 
-    public List<Question> getQuestions() {
+    public List<Question> getQuestions() throws NullPointerException {
         List<Question> results = new ArrayList<>();
-        List<Answer> possibleAnswer = new ArrayList<>();
-
-
-
         try (Cursor cursor = getAllFromTable(QUESTION_TABLE)) {
             final int difficultyId = cursor.getInt(4);
             final int correctAnswerId = cursor.getInt(3);
             final int questionId = cursor.getInt(0);
-            final String questionText = cursor.getString(1);
-            final int questionValue = cursor.getInt(2);
 
-            //Getters
-            final Difficulty difficulty = getDifficultyById(difficultyId);
+            final Set<Answer> answers = getAvailableAnswers(questionId);
             final Answer correctAnswer = getCorrectAnswerById(correctAnswerId);
-            Question question = new Question(questionId, questionText, (Set<Answer>) possibleAnswer, correctAnswer, difficulty, questionValue);
-            final Set<Answer> answers = getAvailableAnswers(question);
+            final Difficulty difficulty = getDifficultyById(difficultyId);
 
-            results.add(new Question(cursor.getInt(0),
+            if (answers.size() != 4)
+                throw new NullPointerException(String.format(
+                        "Question with id [%s] does not have 4 answers!",
+                        questionId
+                ));
+
+            if (correctAnswer == null)
+                throw new NullPointerException(String.format(
+                        "Correct answer not found for id [%s] for question with id [%s]",
+                        correctAnswerId,
+                        questionId));
+
+            if (difficulty == null)
+                throw new NullPointerException(String.format(
+                        "Difficulty not found for id [%s] for question with id [%s]",
+                        difficultyId,
+                        questionId));
+
+            results.add(new Question(questionId,
                     cursor.getString(1),
                     answers,
                     correctAnswer,
@@ -148,11 +158,9 @@ public class DBHelper extends SQLiteOpenHelper {
                 null,
                 null,
                 null)) {
-            if (cursor.moveToFirst())
-                return new Difficulty(cursor.getInt(0),
+            return new Difficulty(cursor.getInt(0),
                     cursor.getInt(1),
                     cursor.getString(2));
-            else return null;
         }
     }
 
@@ -172,12 +180,12 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    private Set<Answer> getAvailableAnswers(Question question) {
+    private Set<Answer> getAvailableAnswers(int questionId) {
         final SQLiteDatabase db = this.getReadableDatabase();
         final Set<Answer> set = new HashSet<>(4);
         try (Cursor cursor = db.query(QUESTION_ANSWER_TABLE,
                 null,
-                "questionId = " + question.getId(),
+                "questionId = " + questionId,
                 null,
                 null,
                 null,
@@ -187,17 +195,14 @@ public class DBHelper extends SQLiteOpenHelper {
                 do {
                     try (Cursor answerCursor = db.query(ANSWER_TABLE,
                             null,
-                            "id = " + cursor.getInt(1), //trocar por retornar um TEXT e nao UM INT
+                            "id = " + cursor.getInt(1), //trocar por retornar um TEXT e nao UM INT -> O casting aqui é feito implicitamente (Rodrigo)
                             null,
                             null,
                             null,
                             null)) {
-                        if (answerCursor.moveToFirst()) {
-                            do {
+                        if (answerCursor.moveToFirst())
                                 set.add(new Answer(answerCursor.getInt(0),
                                         answerCursor.getString(1)));
-                            } while (answerCursor.moveToNext());
-                        }
                     }
                 } while (cursor.moveToNext());
             }
