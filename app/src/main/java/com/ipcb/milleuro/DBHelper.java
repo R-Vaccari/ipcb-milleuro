@@ -86,18 +86,40 @@ public class DBHelper extends SQLiteOpenHelper {
         return results;
     }
 
-    public List<Question> getQuestions() {
+    public List<Question> getQuestions() throws NullPointerException {
         List<Question> results = new ArrayList<>();
         try (Cursor cursor = getAllFromTable(QUESTION_TABLE)) {
             final int difficultyId = cursor.getInt(4);
             final int correctAnswerId = cursor.getInt(3);
             final int questionId = cursor.getInt(0);
 
+            final Set<Answer> answers = getAvailableAnswers(questionId);
+            final Answer correctAnswer = getCorrectAnswerById(correctAnswerId);
+            final Difficulty difficulty = getDifficultyById(difficultyId);
+
+            if (answers.size() != 4)
+                throw new NullPointerException(String.format(
+                        "Question with id [%s] does not have 4 answers!",
+                        questionId
+                ));
+
+            if (correctAnswer == null)
+                throw new NullPointerException(String.format(
+                        "Correct answer not found for id [%s] for question with id [%s]",
+                        correctAnswerId,
+                        questionId));
+
+            if (difficulty == null)
+                throw new NullPointerException(String.format(
+                        "Difficulty not found for id [%s] for question with id [%s]",
+                        difficultyId,
+                        questionId));
+
             results.add(new Question(questionId,
                     cursor.getString(1),
-                    getAvailableAnswers(questionId),
-                    getCorrectAnswerById(correctAnswerId),
-                    getDifficultyById(difficultyId),
+                    answers,
+                    correctAnswer,
+                    difficulty,
                     cursor.getInt(2)));
         }
 
@@ -166,12 +188,9 @@ public class DBHelper extends SQLiteOpenHelper {
                             null,
                             null,
                             null)) {
-                        if (answerCursor.moveToFirst()) {
-                            do {
+                        if (answerCursor.moveToFirst())
                                 set.add(new Answer(answerCursor.getInt(0),
                                         answerCursor.getString(1)));
-                            } while (answerCursor.moveToNext());
-                        }
                     }
                 } while (cursor.moveToNext());
             }
