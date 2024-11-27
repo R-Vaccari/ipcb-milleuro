@@ -8,10 +8,33 @@
     tools:context=".GameActivity">
 
     <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="50 X 50"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.459"
+        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/Game_btnHelp2" />
+
+    <Button
+        android:id="@+id/Game_btnHelp2"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:text="50/50"
+        app:layout_constraintBottom_toTopOf="@+id/Game_btnAnswer1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/Game_btnHelp1"
+        app:layout_constraintTop_toBottomOf="@+id/Game_questionView"
+        app:layout_constraintVertical_bias="0.37" />
+
+    <TextView
         android:id="@+id/Game_txtPlayerName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -23,8 +46,10 @@
         android:background="#922323"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Game_txtPlayerName" />
+        app:layout_constraintTop_toBottomOf="@+id/Game_txtPlayerName"
+        app:layout_constraintVertical_bias="0.352" />
 
     <TextView
         android:id="@+id/Game_txtQuestion"
@@ -42,10 +67,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="132dp"
         android:layout_marginEnd="32dp"
-        android:text="Button"
+        android:text="1"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Game_questionView" />
 
@@ -55,7 +81,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:text="Button"
+        android:text="3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Game_btnAnswer2" />
@@ -66,7 +92,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:text="Button"
+        android:text="4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Game_btnAnswer3" />
@@ -77,13 +103,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:text="Button"
+        android:text="2"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Game_btnAnswer1" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/Game_txtGrant"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
@@ -92,5 +119,37 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/Game_questionView"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/Game_btnHelp1"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="84dp"
+        android:text="SW"
+        app:layout_constraintBottom_toTopOf="@+id/Game_btnAnswer1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Game_questionView"
+        app:layout_constraintVertical_bias="0.37" />
+
+    <Button
+        android:id="@+id/Game_btnExit"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="X"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Trocar Pergunta"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.219"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Game_btnHelp1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

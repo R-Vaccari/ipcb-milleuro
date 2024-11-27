@@ -1,6 +1,7 @@
 package com.ipcb.milleuro;
 
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -11,7 +12,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class GameActivity extends AppCompatActivity {
 
-    TextView txtName;
+    TextView txtName, txtGrant, txtQuestion;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +27,15 @@ public class GameActivity extends AppCompatActivity {
         });
 
         txtName = findViewById(R.id.Game_txtPlayerName);
-        txtName.setText(getIntent().getStringExtra("PlayerName"));
+        txtName.setText(String.format("Bem vindo %s", getIntent().getStringExtra("PlayerName")));
+        txtGrant = findViewById(R.id.Game_txtGrant);
+        txtQuestion = findViewById(R.id.Game_txtQuestion);
+        findViewById(R.id.Game_btnAnswer1).setOnClickListener(view -> {});
+        findViewById(R.id.Game_btnAnswer2).setOnClickListener(view -> {});
+        findViewById(R.id.Game_btnAnswer3).setOnClickListener(view -> {});
+        findViewById(R.id.Game_btnAnswer4).setOnClickListener(view -> {});
+        findViewById(R.id.Game_btnExit).setOnClickListener(view -> {});
+
+
     }
 }
