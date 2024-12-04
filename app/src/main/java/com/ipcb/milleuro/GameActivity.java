@@ -1,6 +1,7 @@
 package com.ipcb.milleuro;
 
 import android.os.Bundle;
+import android.text.SpannableString;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -26,8 +27,8 @@ public class GameActivity extends AppCompatActivity {
         });
 
         Bundle extras = getIntent().getExtras();
-        String playerName = extras.getString("PlayerName");
-        txtName.findViewById(R.id.Game_txtName);
+        SpannableString playerName = (SpannableString) extras.get("PlayerName");
+        txtName = findViewById(R.id.Game_txtName);
         txtName.setText(playerName);
     }
 }
