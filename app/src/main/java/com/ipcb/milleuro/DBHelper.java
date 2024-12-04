@@ -20,7 +20,7 @@ import java.util.Set;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
     private static final String
                                 DATABASE_NAME = "Milleuro",
                                 DIFF_TABLE = "Difficulty",
@@ -28,9 +28,9 @@ public class DBHelper extends SQLiteOpenHelper {
                                 QUESTION_TABLE = "Question",
                                 QUESTION_ANSWER_TABLE = "QuestionAnswer";
 
-    String easy = ", Fácil)";
-    String medium = ", Médio)";
-    String hard = ", Dificil)";
+    String easy = ", 'Facil')";
+    String medium = ", 'Médio')";
+    String hard = ", 'Dificil')";
 
     public DBHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -44,11 +44,11 @@ public class DBHelper extends SQLiteOpenHelper {
                 + "name TEXT NOT NULL)");
 
         db.execSQL("CREATE TABLE " + ANSWER_TABLE + "("
-                + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "id INTEGER PRIMARY KEY, "
                 + "answerText TEXT)");
 
         db.execSQL("CREATE TABLE " + QUESTION_TABLE + "("
-                + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + "id INTEGER PRIMARY KEY, "
                 + "questionText TEXT NOT NULL, "
                 + "value INTEGER NOT NULL, "
                 + "correctAnswerId INTEGER NOT NULL, "
@@ -64,14 +64,17 @@ public class DBHelper extends SQLiteOpenHelper {
                 + "PRIMARY KEY (questionId, answerId))");
 
         db.execSQL("INSERT INTO " + DIFF_TABLE + " VALUES ("
+                + 1 + ","
                 + 1
                 + easy );
 
         db.execSQL("INSERT INTO " + DIFF_TABLE + " VALUES ("
+                + 2 + ","
                 + 2
                 + medium );
 
         db.execSQL("INSERT INTO " + DIFF_TABLE + " VALUES ("
+                + 3 + ","
                 + 3
                 + hard );
 
@@ -106,130 +109,136 @@ public class DBHelper extends SQLiteOpenHelper {
                 + "( 28, 'Suécia' ),"
                 + "( 29, 'Nitrogênio' ),"
                 + "( 30, 'Chita' ),"
-                + "( 'Londres' ),"
-                + "( 'Madri' ),"
-                + "( 'Roma' ),"
-                + "( 'Vincent van Gogh' ),"
-                + "( 'Pablo Picasso' ),"
-                + "( 'Michelangelo' ),"
-                + "( 'Espanhol' ),"
-                + "( 'Inglês' ),"
-                + "( 'Francês' ),"
-                + "( '30' ),"
-                + "( '90' ),"
-                + "( '120' ),"
-                + "( 'Thomas Jefferson' ),"
-                + "( 'Abraham Lincoln' ),"
-                + "( 'John Adams' ),"
-                + "( 'Vênus' ),"
-                + "( 'Marte' ),"
-                + "( 'Júpiter' ),"
-                + "( 'Oceano Índico' ),"
-                + "( 'Oceano Atlântico' ),"
-                + "( 'Oceano Ártico' ),"
-                + "( '100' ),"
-                + "( '50' ),"
-                + "( '120' ),"
-                + "( 'Yuan' ),"
-                + "( 'Won' ),"
-                + "( 'Dólar' ),"
-                + "( 'Ásia' ),"
-                + "( 'América' ),"
-                + "( 'Europa' ),"
-                + "( 'Malta' ),"
-                + "( 'Mônaco' ),"
-                + "( 'San Marino' ),"
-                + "( 'CO₂' ),"
-                + "( 'O₂' ),"
-                + "( 'NaCl' ),"
-                + "( 'Cristóvão Colombo' ),"
-                + "( 'Vasco da Gama' ),"
-                + "( 'Fernão de Magalhães' ),"
-                + "( 'Charles Dickens' ),"
-                + "( 'Victor Hugo' ),"
-                + "( 'Goethe' ),"
-                + "( 'Marte' ),"
-                + "( 'Vênus' ),"
-                + "( 'Júpiter' ),"
-                + "( 'Coração' ),"
-                + "( 'Pulmão' ),"
-                + "( 'Fígado' ),"
-                + "( 'Molécula' ),"
-                + "( 'Átomo' ),"
-                + "( 'Tecido' ),"
-                + "( '1960' ),"
-                + "( '1965' ),"
-                + "( '1972' ),"
-                + "( 'Ashoka' ),"
-                + "( 'Mahatma Gandhi' ),"
-                + "( 'Vishnu' ),"
-                + "( 'China' ),"
-                + "( 'Rússia' ),"
-                + "( 'Estados Unidos' ),"
-                + "( 'Gabriel García Márquez' ),"
-                + "( 'William Shakespeare' ),"
-                + "( 'Fernando Pessoa' ),"
-                + "( 'Ag' ),"
-                + "( 'Hg' ),"
-                + "( 'Fe' ),"
-                + "( 'Elefante' ),"
-                + "( 'Hipopótamo' ),"
-                + "( 'Rinoceronte' ),"
-                + "( 'J.R.R. Tolkien' ),"
-                + "( 'Stephen King' ),"
-                + "( 'George R.R. Martin' ),"
-                + "( 'China' ),"
-                + "( 'Alemanha' ),"
-                + "( 'Cuba' ),"
-                + "( 'Andrômeda' ),"
-                + "( 'Centaurus' ),"
-                + "( 'M51' ),"
-                + "( '1689' ),"
-                + "( '1776' ),"
-                + "( '1799' ),"
-                + "( 'Canadá' ),"
-                + "( 'Indonésia' ),"
-                + "( 'Filipinas' ),"
-                + "( 'Oxigênio' ),"
-                + "( 'Hidrogênio' ),"
-                + "( 'Carbono' ),"
-                + "( 'Tigre' ),"
-                + "( 'Cavalo' ),"
-                + "( 'Leopardo' );");
-
-        db.execSQL("INSERT INTO " + QUESTION_TABLE + " (questionText, value, correctAnswerId, difficultyId) VALUES "
-                + "( 'Qual é a capital da França?', 100, 1, 1 ),"
-                + "( 'Quem pintou a Mona Lisa?', 100, 2, 1 ),"
-                + "( 'Qual é o idioma oficial do Brasil?', 100, 3, 1 ),"
-                + "( 'Quantos minutos tem uma hora?', 100, 4, 1 ),"
-                + "( 'Quem foi o primeiro presidente dos Estados Unidos?', 100, 5, 1 ),"
-                + "( 'Qual é o planeta mais próximo do Sol?', 100, 6, 1 ),"
-                + "( 'Qual é o maior oceano do mundo?', 100, 7, 1 ),"
-                + "( 'Quantos segundos tem um minuto?', 100, 8, 1 ),"
-                + "( 'Qual é a moeda oficial do Japão?', 100, 9, 1 ),"
-                + "( 'Em qual continente fica o Egito?', 100, 10, 1 ),"
-                + "( 'Qual é o menor país do mundo?', 200, 11, 2 ),"
-                + "( 'Qual é a fórmula química da água?', 200, 12, 2 ),"
-                + "( 'Quem descobriu o Brasil?', 200, 13, 2 ),"
-                + "( 'Quem escreveu a obra \"Hamlet\"?', 200, 14, 2 ),"
-                + "( 'Qual desses é um planeta anão?', 200, 15, 2 ),"
-                + "( 'Qual é o maior órgão do corpo humano?', 200, 16, 2 ),"
-                + "( 'Qual é a unidade básica da vida?', 200, 17, 2 ),"
-                + "( 'Em que ano o homem pisou na Lua pela primeira vez?', 200, 18, 2 ),"
-                + "( 'Qual foi o primeiro nome de Buda?', 200, 19, 2 ),"
-                + "( 'Qual é o segundo maior país do mundo em área?', 200, 20, 2 ),"
-                + "( 'Quem escreveu \"Dom Quixote\"?', 300, 21, 3 ),"
-                + "( 'Qual é o símbolo químico do Ouro?', 300, 22, 3 ),"
-                + "( 'Qual é o maior mamífero do mundo?', 300, 23, 3 ),"
-                + "( 'Quem é o autor de “Harry Potter”?', 300, 24, 3 ),"
-                + "( 'Qual foi o primeiro país a adotar o socialismo?', 300, 25, 3 ),"
-                + "( 'Qual o nome da galáxia onde está o Sistema Solar?', 300, 26, 3 ),"
-                + "( 'Em que ano ocorreu a Revolução Francesa?', 300, 27, 3 ),"
-                + "( 'Qual o país com o maior número de ilhas no mundo?', 300, 28, 3 ),"
-                + "( 'Qual é o elemento químico mais abundante na atmosfera da Terra?', 300, 29, 3 ),"
-                + "( 'Qual é o animal terrestre mais rápido do mundo?', 300, 30, 3 );");
+                + "( 31, 'Londres' ),"
+                + "( 32, 'Madri' ),"
+                + "( 33, 'Roma' ),"
+                + "( 34, 'Vincent van Gogh' ),"
+                + "( 35, 'Pablo Picasso' ),"
+                + "( 36, 'Michelangelo' ),"
+                + "( 37, 'Espanhol' ),"
+                + "( 38, 'Inglês' ),"
+                + "( 39, 'Francês' ),"
+                + "( 40, '30' ),"
+                + "( 41, '90' ),"
+                + "( 42, '120' ),"
+                + "( 43, 'Thomas Jefferson' ),"
+                + "( 44, 'Abraham Lincoln' ),"
+                + "( 45, 'John Adams' ),"
+                + "( 46, 'Vênus' ),"
+                + "( 47, 'Marte' ),"
+                + "( 48, 'Júpiter' ),"
+                + "( 49, 'Oceano Índico' ),"
+                + "( 50, 'Oceano Atlântico' ),"
+                + "( 51, 'Oceano Ártico' ),"
+                + "( 52, '100' ),"
+                + "( 53, '50' ),"
+                + "( 54, '120' ),"
+                + "( 55, 'Yuan' ),"
+                + "( 56, 'Won' ),"
+                + "( 57, 'Dólar' ),"
+                + "( 58, 'Ásia' ),"
+                + "( 59, 'América' ),"
+                + "( 60, 'Europa' ),"
+                + "( 61, 'Malta' ),"
+                + "( 62, 'Mônaco' ),"
+                + "( 63, 'San Marino' ),"
+                + "( 64, 'CO₂' ),"
+                + "( 65, 'O₂' ),"
+                + "( 66, 'NaCl' ),"
+                + "( 67, 'Cristóvão Colombo' ),"
+                + "( 68, 'Vasco da Gama' ),"
+                + "( 69, 'Fernão de Magalhães' ),"
+                + "( 70, 'Charles Dickens' ),"
+                + "( 71, 'Victor Hugo' ),"
+                + "( 72, 'Goethe' ),"
+                + "( 73, 'Marte' ),"
+                + "( 74, 'Vênus' ),"
+                + "( 75, 'Júpiter' ),"
+                + "( 76, 'Coração' ),"
+                + "( 77, 'Pulmão' ),"
+                + "( 78, 'Fígado' ),"
+                + "( 79, 'Molécula' ),"
+                + "( 80, 'Átomo' ),"
+                + "( 81, 'Tecido' ),"
+                + "( 82, '1960' ),"
+                + "( 83, '1965' ),"
+                + "( 84, '1972' ),"
+                + "( 85, 'Ashoka' ),"
+                + "( 86, 'Mahatma Gandhi' ),"
+                + "( 87, 'Vishnu' ),"
+                + "( 88, 'China' ),"
+                + "( 89, 'Rússia' ),"
+                + "( 90, 'Estados Unidos' ),"
+                + "( 91, 'Gabriel García Márquez' ),"
+                + "( 92, 'William Shakespeare' ),"
+                + "( 93, 'Fernando Pessoa' ),"
+                + "( 94, 'Ag' ),"
+                + "( 95, 'Hg' ),"
+                + "( 96, 'Fe' ),"
+                + "( 97, 'Elefante' ),"
+                + "( 98, 'Hipopótamo' ),"
+                + "( 99, 'Rinoceronte' ),"
+                + "( 100, 'J.R.R. Tolkien' ),"
+                + "( 101, 'Stephen King' ),"
+                + "( 102, 'George R.R. Martin' ),"
+                + "( 103, 'China' ),"
+                + "( 104, 'Alemanha' ),"
+                + "( 105, 'Cuba' ),"
+                + "( 106, 'Andrômeda' ),"
+                + "( 107, 'Centaurus' ),"
+                + "( 108, 'M51' ),"
+                + "( 109, '1689' ),"
+                + "( 110, '1776' ),"
+                + "( 111, '1799' ),"
+                + "( 112, 'Canadá' ),"
+                + "( 113, 'Indonésia' ),"
+                + "( 114, 'Filipinas' ),"
+                + "( 115, 'Oxigênio' ),"
+                + "( 116, 'Hidrogênio' ),"
+                + "( 117, 'Carbono' ),"
+                + "( 118, 'Tigre' ),"
+                + "( 119, 'Cavalo' ),"
+                + "( 120, 'Leopardo' );");
 
 
+        db.execSQL("INSERT INTO " + QUESTION_TABLE + " VALUES "
+                + "( 1, 'Qual é a capital da França?', 100, 1, 1 ),"
+                + "( 2, 'Quem pintou a Mona Lisa?', 100, 2, 1 ),"
+                + "( 3, 'Qual é o idioma oficial do Brasil?', 100, 3, 1 ),"
+                + "( 4, 'Quantos minutos tem uma hora?', 100, 4, 1 ),"
+                + "( 5, 'Quem foi o primeiro presidente dos Estados Unidos?', 100, 5, 1 ),"
+                + "( 6, 'Qual é o planeta mais próximo do Sol?', 100, 6, 1 ),"
+                + "( 7, 'Qual é o maior oceano do mundo?', 100, 7, 1 ),"
+                + "( 8, 'Quantos segundos tem um minuto?', 100, 8, 1 ),"
+                + "( 9, 'Qual é a moeda oficial do Japão?', 100, 9, 1 ),"
+                + "( 10, 'Em qual continente fica o Egito?', 100, 10, 1 ),"
+                + "( 11, 'Qual é o menor país do mundo?', 200, 11, 2 ),"
+                + "( 12, 'Qual é a fórmula química da água?', 200, 12, 2 ),"
+                + "( 13, 'Quem descobriu o Brasil?', 200, 13, 2 ),"
+                + "( 14, 'Quem escreveu a obra \"Hamlet\"?', 200, 14, 2 ),"
+                + "( 15, 'Qual desses é um planeta anão?', 200, 15, 2 ),"
+                + "( 16, 'Qual é o maior órgão do corpo humano?', 200, 16, 2 ),"
+                + "( 17, 'Qual é a unidade básica da vida?', 200, 17, 2 ),"
+                + "( 18, 'Em que ano o homem pisou na Lua pela primeira vez?', 200, 18, 2 ),"
+                + "( 19, 'Qual foi o primeiro nome de Buda?', 200, 19, 2 ),"
+                + "( 20, 'Qual é o segundo maior país do mundo em área?', 200, 20, 2 ),"
+                + "( 21, 'Quem escreveu \"Dom Quixote\"?', 300, 21, 3 ),"
+                + "( 22, 'Qual é o símbolo químico do Ouro?', 300, 22, 3 ),"
+                + "( 23, 'Qual é o maior mamífero do mundo?', 300, 23, 3 ),"
+                + "( 24, 'Quem é o autor de “Harry Potter”?', 300, 24, 3 ),"
+                + "( 25, 'Qual foi o primeiro país a adotar o socialismo?', 300, 25, 3 ),"
+                + "( 26, 'Qual o nome da galáxia onde está o Sistema Solar?', 300, 26, 3 ),"
+                + "( 27, 'Em que ano ocorreu a Revolução Francesa?', 300, 27, 3 ),"
+                + "( 28, 'Qual o país com o maior número de ilhas no mundo?', 300, 28, 3 ),"
+                + "( 29, 'Qual é o elemento químico mais abundante na atmosfera da Terra?', 300, 29, 3 ),"
+                + "( 30, 'Qual é o animal terrestre mais rápido do mundo?', 300, 30, 3 );");
+
+        db.execSQL("INSERT INTO " + QUESTION_ANSWER_TABLE + " VALUES "
+                + "( 1, 1 ),"
+                + "( 1, 2 ),"
+                + "( 1, 3 ),"
+                + "( 1, 4 ),"
+                + "( 2, 5 )");
     }
 
     @Override
@@ -255,9 +264,11 @@ public class DBHelper extends SQLiteOpenHelper {
     public List<Difficulty> getDifficulties() {
         List<Difficulty> results = new ArrayList<>();
         try (Cursor cursor = getAllFromTable(DIFF_TABLE)) {
-            results.add(new Difficulty(cursor.getInt(0),
+            if (cursor.moveToFirst())
+                results.add(new Difficulty(cursor.getInt(0),
                     cursor.getInt(1),
                     cursor.getString(2)));
+            else return null;
         }
 
         return results;
@@ -266,8 +277,10 @@ public class DBHelper extends SQLiteOpenHelper {
     public List<Answer> getAnswers() {
         List<Answer> results = new ArrayList<>();
         try (Cursor cursor = getAllFromTable(ANSWER_TABLE)) {
-            results.add(new Answer(cursor.getInt(0),
+            if (cursor.moveToFirst())
+                results.add(new Answer(cursor.getInt(0),
                     cursor.getString(1)));
+            else return null;
         }
 
         return results;
@@ -334,24 +347,23 @@ public class DBHelper extends SQLiteOpenHelper {
                 null,
                 null,
                 null)) {
-            return new Difficulty(cursor.getInt(0),
-                    cursor.getInt(1),
-                    cursor.getString(2));
+            if (cursor.moveToFirst()) {
+                return new Difficulty(cursor.getInt(0),
+                        cursor.getInt(1),
+                        cursor.getString(2));
+            } else
+                return null;
         }
     }
 
     private Answer getCorrectAnswerById(int id) {
         final SQLiteDatabase db = this.getReadableDatabase();
-        try (Cursor cursor = db.query(ANSWER_TABLE,
-                null,
-                "id = " + id,
-                null,
-                null,
-                null,
+        try (Cursor cursor = db.rawQuery("SELECT * FROM " + ANSWER_TABLE + " WHERE id = " + id,
+
                 null)) {
             if (cursor.moveToFirst())
                 return new Answer(cursor.getInt(0),
-                        cursor.getString(2));
+                        cursor.getString(1));
             else return null;
         }
     }
