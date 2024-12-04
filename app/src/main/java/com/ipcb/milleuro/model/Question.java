@@ -1,16 +1,17 @@
 package com.ipcb.milleuro.model;
 
+import java.util.List;
 import java.util.Set;
 
 public class Question {
     private int id;
     private String questionText;
-    private Set<Answer> possibleAnswers;
+    private List<Answer> possibleAnswers;
     private Answer correctAnswer;
     private Difficulty difficulty;
     private int value;
 
-    public Question(int id, String questionText, Set<Answer> possibleAnswers, Answer correctAnswer, Difficulty difficulty, int value) {
+    public Question(int id, String questionText, List<Answer> possibleAnswers, Answer correctAnswer, Difficulty difficulty, int value) {
         this.id = id;
         this.questionText = questionText;
         this.possibleAnswers = possibleAnswers;
@@ -43,11 +44,11 @@ public class Question {
         this.questionText = questionText;
     }
 
-    public Set<Answer> getPossibleAnswers() {
+    public List<Answer> getPossibleAnswers() {
         return possibleAnswers;
     }
 
-    public void setPossibleAnswers(Set<Answer> possibleAnswers) {
+    public void setPossibleAnswers(List<Answer> possibleAnswers) {
         this.possibleAnswers = possibleAnswers;
     }
 
