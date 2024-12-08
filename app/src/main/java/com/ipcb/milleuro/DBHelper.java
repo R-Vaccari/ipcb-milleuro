@@ -327,6 +327,32 @@ public class DBHelper extends SQLiteOpenHelper {
         return results;
     }
 
+    public List<Question> getQuestionsByDifficulty(int difficultyLevel) {
+        List<Question> questions = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + QUESTION_TABLE + " WHERE difficultyId = ?";
+        try (Cursor cursor = getQuestionByDifficultyId(QUESTION_TABLE,difficultyLevel)) {
+            if (cursor.moveToFirst()) {
+                do {
+                    int questionId = cursor.getInt(0);
+                    String questionText = cursor.getString(1);
+                    int value = cursor.getInt(2);
+                    int correctAnswerId = cursor.getInt(3);
+
+
+                    List<Answer> answers = getAvailableAnswers(questionId);
+                    Answer correctAnswer = getCorrectAnswerById(correctAnswerId);
+                    Difficulty difficulty = getDifficultyById(difficultyLevel);
+
+
+                    questions.add(new Question(questionId, questionText, answers, correctAnswer, difficulty, value));
+                } while (cursor.moveToNext());
+            }
+        }
+        return questions;
+    }
+
+
     private Cursor getAllFromTable(String table) {
         final SQLiteDatabase db = this.getReadableDatabase();
         return db.query(table,
@@ -355,6 +381,18 @@ public class DBHelper extends SQLiteOpenHelper {
                 return null;
         }
     }
+
+    private Cursor getQuestionByDifficultyId(String table, int id) {
+        final SQLiteDatabase db = this.getReadableDatabase();
+        return db.query(table,
+                null,
+                "difficultyId = " + id,
+                null,
+                null,
+                null,
+                null);
+    }
+
 
     private Answer getCorrectAnswerById(int id) {
         final SQLiteDatabase db = this.getReadableDatabase();

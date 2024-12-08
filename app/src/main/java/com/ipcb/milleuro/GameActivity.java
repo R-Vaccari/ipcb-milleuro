@@ -1,8 +1,10 @@
 package com.ipcb.milleuro;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +16,10 @@ import com.ipcb.milleuro.model.Answer;
 import com.ipcb.milleuro.model.Difficulty;
 import com.ipcb.milleuro.model.Question;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
+
 
 public class GameActivity extends AppCompatActivity {
 
@@ -24,6 +29,9 @@ public class GameActivity extends AppCompatActivity {
     List<Answer> answers;
     List<Difficulty> difficulties;
     int currentIndex;
+    int totalQuestions = 15;
+    List<Question> selectedQuestions = new ArrayList<>();
+    DBHelper db;
 
 
     @Override
@@ -31,11 +39,18 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_game);
-        try (DBHelper db = new DBHelper(this)){
+        try {
+            db = new DBHelper(this);
             questions = db.getQuestions();
             answers = db.getAnswers();
             difficulties = db.getDifficulties();
-
+            selectedQuestions.addAll(getRandomQuestionsByDifficulty(1, 5));
+            selectedQuestions.addAll(getRandomQuestionsByDifficulty(2, 5));
+            selectedQuestions.addAll(getRandomQuestionsByDifficulty(3, 5));
+        } finally {
+            if (db != null) {
+                db.close();
+            }
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -44,37 +59,71 @@ public class GameActivity extends AppCompatActivity {
             return insets;
         });
 
-        Question quests = questions.get(currentIndex);
-        Answer ans = answers.get(0);
-        Difficulty diff = difficulties.get(currentIndex);
-
         txtName = findViewById(R.id.Game_txtPlayerName);
         txtDifficulty = findViewById(R.id.Game_txtDifficulty);
-        txtName.setText(String.format("Bem vindo %s", getIntent().getStringExtra("PlayerName")));
         txtGrant = findViewById(R.id.Game_txtGrant);
         txtQuestion = findViewById(R.id.Game_txtQuestion);
-        txtQuestion.setText(quests.getQuestionText());
-        txtDifficulty.setText(String.format("%s %s", diff.getDifficultyLevel(), diff.getName()));
-
         btnAnswer1 = findViewById(R.id.Game_btnAnswer1);
         btnAnswer2 = findViewById(R.id.Game_btnAnswer2);
         btnAnswer3 = findViewById(R.id.Game_btnAnswer3);
         btnAnswer4 = findViewById(R.id.Game_btnAnswer4);
 
-        btnAnswer1.setText(ans.getAnswerText());
-        btnAnswer2.setText(ans.getAnswerText());
-        btnAnswer3.setText(quests.getCorrectAnswer().getAnswerText());
-        btnAnswer4.setText(ans.getAnswerText());
-
-        btnAnswer1.setOnClickListener(view -> onClickAnswer(quests.getPossibleAnswers().get(1)));
-        btnAnswer2.setOnClickListener(view -> onClickAnswer(quests.getPossibleAnswers().get(2)));
-        btnAnswer3.setOnClickListener(view -> onClickAnswer(quests.getPossibleAnswers().get(3)));
-        btnAnswer4.setOnClickListener(view -> {});
+        txtName.setText(String.format("Bem vindo %s", getIntent().getStringExtra("PlayerName")));
 
 
+        loadQuestion();
+        Log.e("GameActivity", "currentIndex");
     }
 
-    public void onClickAnswer(Answer ans){
 
+    private List<Question> getRandomQuestionsByDifficulty(int difficultyLevel, int count) {
+        List<Question> questionsByDifficulty = db.getQuestionsByDifficulty(difficultyLevel);
+        Collections.shuffle(questionsByDifficulty);
+        return questionsByDifficulty.subList(0, Math.min(count, questionsByDifficulty.size()));
+    }
+
+    private void loadQuestion() {
+        if (currentIndex >= selectedQuestions.size()) {
+            finishGame();
+            return;
+        }
+
+        Question question = selectedQuestions.get(currentIndex);
+        txtQuestion.setText(question.getQuestionText());
+        txtDifficulty.setText(String.format("Dificuldade: %s", question.getDifficulty().toString()));
+
+        // Prepara as respostas
+        List<Answer> possibleAnswers = new ArrayList<>(question.getPossibleAnswers());
+        Collections.shuffle(possibleAnswers);
+
+        // Exibe as respostas nos botões
+        if (possibleAnswers.size() == 4) {
+            btnAnswer1.setText(possibleAnswers.get(0).getAnswerText());
+            btnAnswer2.setText(possibleAnswers.get(1).getAnswerText());
+            btnAnswer3.setText(possibleAnswers.get(2).getAnswerText());
+            btnAnswer4.setText(possibleAnswers.get(3).getAnswerText());
+        } else {
+            Log.e("GameActivity", "Número insuficiente de respostas na lista!");
+
+        }
+
+        // Configuração do clique nos botões
+        btnAnswer1.setOnClickListener(view -> checkAnswer(possibleAnswers.get(0)));
+        btnAnswer2.setOnClickListener(view -> checkAnswer(possibleAnswers.get(1)));
+        btnAnswer3.setOnClickListener(view -> checkAnswer(possibleAnswers.get(2)));
+        btnAnswer4.setOnClickListener(view -> checkAnswer(possibleAnswers.get(3)));
+    }
+
+    private void checkAnswer(Answer selectedAnswer) {
+        if (selectedAnswer.isCorrect(selectedAnswer.getId())) {
+            currentIndex++;
+            loadQuestion();
+        } else {
+            Log.e("GameActivity", "Resposta incorreta!");
+        }
+    }
+
+    private void finishGame() {
+        txtQuestion.setText("Fim do jogo! Parabéns VAGABUNDO!");
     }
 }
