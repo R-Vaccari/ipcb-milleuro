@@ -20,6 +20,18 @@ public class Question {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        return "Question{" +
+                "id=" + id +
+                ", questionText='" + questionText + '\'' +
+                ", possibleAnswers=" + possibleAnswers +
+                ", correctAnswer=" + correctAnswer +
+                ", difficulty=" + difficulty +
+                ", value=" + value +
+                '}';
+    }
+
     public int getValue() {
         return value;
     }
