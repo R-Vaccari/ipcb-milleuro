@@ -24,6 +24,7 @@ import java.util.Collections;
 public class GameActivity extends AppCompatActivity {
 
     TextView txtName, txtDifficulty, txtGrant, txtQuestion;
+    List<Button> buttonList = new ArrayList<>(4);
     Button btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4;
     List<Question> questions;
     List<Answer> answers;
@@ -31,26 +32,20 @@ public class GameActivity extends AppCompatActivity {
     int currentIndex;
     int totalQuestions = 15;
     List<Question> selectedQuestions = new ArrayList<>();
-    DBHelper db;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_game);
-        try {
-            db = new DBHelper(this);
+
+        try (DBHelper db = new DBHelper(this)){
             questions = db.getQuestions();
             answers = db.getAnswers();
             difficulties = db.getDifficulties();
-            selectedQuestions.addAll(getRandomQuestionsByDifficulty(1, 5));
-            selectedQuestions.addAll(getRandomQuestionsByDifficulty(2, 5));
-            selectedQuestions.addAll(getRandomQuestionsByDifficulty(3, 5));
-        } finally {
-            if (db != null) {
-                db.close();
-            }
+            selectedQuestions.addAll(getRandomQuestionsByDifficulty(1, 5, db));
+            selectedQuestions.addAll(getRandomQuestionsByDifficulty(2, 5, db));
+            selectedQuestions.addAll(getRandomQuestionsByDifficulty(3, 5, db));
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -63,20 +58,25 @@ public class GameActivity extends AppCompatActivity {
         txtDifficulty = findViewById(R.id.Game_txtDifficulty);
         txtGrant = findViewById(R.id.Game_txtGrant);
         txtQuestion = findViewById(R.id.Game_txtQuestion);
+
         btnAnswer1 = findViewById(R.id.Game_btnAnswer1);
         btnAnswer2 = findViewById(R.id.Game_btnAnswer2);
         btnAnswer3 = findViewById(R.id.Game_btnAnswer3);
         btnAnswer4 = findViewById(R.id.Game_btnAnswer4);
 
+        buttonList.add(btnAnswer1);
+        buttonList.add(btnAnswer2);
+        buttonList.add(btnAnswer3);
+        buttonList.add(btnAnswer4);
+
         txtName.setText(String.format("Bem vindo %s", getIntent().getStringExtra("PlayerName")));
 
-
+        Log.d("GameActivity", String.valueOf(currentIndex));
         loadQuestion();
-        Log.e("GameActivity", "currentIndex");
     }
 
 
-    private List<Question> getRandomQuestionsByDifficulty(int difficultyLevel, int count) {
+    private List<Question> getRandomQuestionsByDifficulty(int difficultyLevel, int count, DBHelper db) {
         List<Question> questionsByDifficulty = db.getQuestionsByDifficulty(difficultyLevel);
         Collections.shuffle(questionsByDifficulty);
         return questionsByDifficulty.subList(0, Math.min(count, questionsByDifficulty.size()));
@@ -88,30 +88,22 @@ public class GameActivity extends AppCompatActivity {
             return;
         }
 
-        Question question = selectedQuestions.get(currentIndex);
+        Question question = questions.get(currentIndex);
+        Log.d("GameActivity", question.toString());
         txtQuestion.setText(question.getQuestionText());
-        txtDifficulty.setText(String.format("Dificuldade: %s", question.getDifficulty().toString()));
+        txtDifficulty.setText(String.format("Dificuldade: %s", question.getDifficulty().getName()));
 
         // Prepara as respostas
         List<Answer> possibleAnswers = new ArrayList<>(question.getPossibleAnswers());
         Collections.shuffle(possibleAnswers);
+        Log.d("GameActivity", possibleAnswers.toString());
 
-        // Exibe as respostas nos botões
-        if (possibleAnswers.size() == 4) {
-            btnAnswer1.setText(possibleAnswers.get(0).getAnswerText());
-            btnAnswer2.setText(possibleAnswers.get(1).getAnswerText());
-            btnAnswer3.setText(possibleAnswers.get(2).getAnswerText());
-            btnAnswer4.setText(possibleAnswers.get(3).getAnswerText());
-        } else {
-            Log.e("GameActivity", "Número insuficiente de respostas na lista!");
-
+        for (int i = 0; i < 4; i++) {
+            final Button button = buttonList.get(i);
+            final Answer answer = possibleAnswers.get(i);
+            button.setText(answer.getAnswerText());
+            button.setOnClickListener(view -> checkAnswer(answer));
         }
-
-        // Configuração do clique nos botões
-        btnAnswer1.setOnClickListener(view -> checkAnswer(possibleAnswers.get(0)));
-        btnAnswer2.setOnClickListener(view -> checkAnswer(possibleAnswers.get(1)));
-        btnAnswer3.setOnClickListener(view -> checkAnswer(possibleAnswers.get(2)));
-        btnAnswer4.setOnClickListener(view -> checkAnswer(possibleAnswers.get(3)));
     }
 
     private void checkAnswer(Answer selectedAnswer) {
