@@ -149,6 +149,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 null);
     }
 
+    @Nullable
     private Difficulty getDifficultyById(int id) {
         final SQLiteDatabase db = this.getReadableDatabase();
         try (Cursor cursor = db.query(DIFF_TABLE,
@@ -158,12 +159,15 @@ public class DBHelper extends SQLiteOpenHelper {
                 null,
                 null,
                 null)) {
-            return new Difficulty(cursor.getInt(0),
-                    cursor.getInt(1),
-                    cursor.getString(2));
+            if (cursor.moveToFirst())
+                return new Difficulty(cursor.getInt(0),
+                        cursor.getInt(1),
+                        cursor.getString(2));
+            else return null;
         }
     }
 
+    @Nullable
     private Answer getCorrectAnswerById(int id) {
         final SQLiteDatabase db = this.getReadableDatabase();
         try (Cursor cursor = db.query(ANSWER_TABLE,
