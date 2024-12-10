@@ -1,12 +1,10 @@
 package com.ipcb.milleuro;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ipcb.milleuro.model.Answer;
@@ -14,9 +12,7 @@ import com.ipcb.milleuro.model.Difficulty;
 import com.ipcb.milleuro.model.Question;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -250,17 +246,6 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    void addQuestion(Question question){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-
-        cv.put("id", question.getId());
-        cv.put("questionText", question.getQuestionText());
-
-
-        db.insert(QUESTION_TABLE, null, cv);
-    }
-
     public List<Difficulty> getDifficulties() {
         List<Difficulty> results = new ArrayList<>();
         try (Cursor cursor = getAllFromTable(DIFF_TABLE)) {
@@ -329,8 +314,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public List<Question> getQuestionsByDifficulty(int difficultyLevel) {
         List<Question> questions = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + QUESTION_TABLE + " WHERE difficultyId = ?";
         try (Cursor cursor = getQuestionByDifficultyId(QUESTION_TABLE,difficultyLevel)) {
             if (cursor.moveToFirst()) {
                 do {
@@ -351,7 +334,6 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         return questions;
     }
-
 
     private Cursor getAllFromTable(String table) {
         final SQLiteDatabase db = this.getReadableDatabase();
