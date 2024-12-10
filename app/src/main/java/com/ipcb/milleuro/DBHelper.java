@@ -16,7 +16,7 @@ import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 6;
     private static final String
                                 DATABASE_NAME = "Milleuro",
                                 DIFF_TABLE = "Difficulty",
@@ -231,10 +231,125 @@ public class DBHelper extends SQLiteOpenHelper {
 
         db.execSQL("INSERT INTO " + QUESTION_ANSWER_TABLE + " VALUES "
                 + "( 1, 1 ),"
-                + "( 1, 2 ),"
+                + "( 1, 2),"
                 + "( 1, 3 ),"
                 + "( 1, 4 ),"
-                + "( 2, 5 )");
+                + "( 2, 2 ),"
+                + "( 2, 6 ),"
+                + "( 2, 7 ),"
+                + "( 2, 8 ),"
+                + "( 3, 3 ),"
+                + "( 3, 10 ),"
+                + "( 3, 11 ),"
+                + "( 3, 12 ),"
+                + "( 4, 4 ),"
+                + "( 4, 14 ),"
+                + "( 4, 15 ),"
+                + "( 4, 16 ),"
+                + "( 5, 5 ),"
+                + "( 5, 18 ),"
+                + "( 5, 19 ),"
+                + "( 5, 20 ),"
+                + "( 6, 6 ),"
+                + "( 6, 22 ),"
+                + "( 6, 23 ),"
+                + "( 6, 24 ),"
+                + "( 7, 7 ),"
+                + "( 7, 26 ),"
+                + "( 7, 27 ),"
+                + "( 7, 28 ),"
+                + "( 8, 8 ),"
+                + "( 8, 30 ),"
+                + "( 8, 31 ),"
+                + "( 8, 32 ),"
+                + "( 9, 9 ),"
+                + "( 9, 34 ),"
+                + "( 9, 35 ),"
+                + "( 9, 36 ),"
+                + "( 10, 10 ),"
+                + "( 10, 38 ),"
+                + "( 10, 39 ),"
+                + "( 10, 40 ),"
+                + "( 11, 11 ),"
+                + "( 11, 42 ),"
+                + "( 11, 43 ),"
+                + "( 11, 44 ),"
+                + "( 12, 12 ),"
+                + "( 12, 46 ),"
+                + "( 12, 47 ),"
+                + "( 12, 48 ),"
+                + "( 13, 13 ),"
+                + "( 13, 50 ),"
+                + "( 13, 51 ),"
+                + "( 13, 52 ),"
+                + "( 14, 14 ),"
+                + "( 14, 54 ),"
+                + "( 14, 55 ),"
+                + "( 14, 56 ),"
+                + "( 15, 15 ),"
+                + "( 15, 58 ),"
+                + "( 15, 59 ),"
+                + "( 15, 60 ),"
+                + "( 16, 16 ),"
+                + "( 16, 62 ),"
+                + "( 16, 63 ),"
+                + "( 16, 64 ),"
+                + "( 17, 17 ),"
+                + "( 17, 66 ),"
+                + "( 17, 67 ),"
+                + "( 17, 68 ),"
+                + "( 18, 18 ),"
+                + "( 18, 70 ),"
+                + "( 18, 71 ),"
+                + "( 18, 72 ),"
+                + "( 19, 19 ),"
+                + "( 19, 74 ),"
+                + "( 19, 75 ),"
+                + "( 19, 76 ),"
+                + "( 20, 20 ),"
+                + "( 20, 78 ),"
+                + "( 20, 79 ),"
+                + "( 20, 80 ),"
+                + "( 21, 21 ),"
+                + "( 21, 82 ),"
+                + "( 21, 83 ),"
+                + "( 21, 84 ),"
+                + "( 22, 22 ),"
+                + "( 22, 86 ),"
+                + "( 22, 87 ),"
+                + "( 22, 88 ),"
+                + "( 23, 23 ),"
+                + "( 23, 90 ),"
+                + "( 23, 91 ),"
+                + "( 23, 92 ),"
+                + "( 24, 24 ),"
+                + "( 24, 94 ),"
+                + "( 24, 95 ),"
+                + "( 24, 96 ),"
+                + "( 25, 25 ),"
+                + "( 25, 98 ),"
+                + "( 25, 99 ),"
+                + "( 25, 100 ),"
+                + "( 26, 26 ),"
+                + "( 26, 102 ),"
+                + "( 26, 103 ),"
+                + "( 26, 104 ),"
+                + "( 27, 27 ),"
+                + "( 27, 106 ),"
+                + "( 27, 107 ),"
+                + "( 27, 108 ),"
+                + "( 28, 28 ),"
+                + "( 28, 110 ),"
+                + "( 28, 111 ),"
+                + "( 28, 112 ),"
+                + "( 29, 29 ),"
+                + "( 29, 114 ),"
+                + "( 29, 115 ),"
+                + "( 29, 116 ),"
+                + "( 30, 30 ),"
+                + "( 30, 118 ),"
+                + "( 30, 119 ),"
+                + "( 30, 120 )");
     }
 
     @Override
@@ -275,38 +390,40 @@ public class DBHelper extends SQLiteOpenHelper {
         List<Question> results = new ArrayList<>();
         try (Cursor cursor = getAllFromTable(QUESTION_TABLE)) {
             if (cursor.moveToFirst()) {
-                final int difficultyId = cursor.getInt(4);
-                final int correctAnswerId = cursor.getInt(3);
-                final int questionId = cursor.getInt(0);
+                do {
+                    final int difficultyId = cursor.getInt(4);
+                    final int correctAnswerId = cursor.getInt(3);
+                    final int questionId = cursor.getInt(0);
 
-                final List<Answer> answers = getAvailableAnswers(questionId);
-                final Answer correctAnswer = getCorrectAnswerById(correctAnswerId);
-                final Difficulty difficulty = getDifficultyById(difficultyId);
+                    final List<Answer> answers = getAvailableAnswers(questionId);
+                    final Answer correctAnswer = getCorrectAnswerById(correctAnswerId);
+                    final Difficulty difficulty = getDifficultyById(difficultyId);
 
-                if (answers.size() != 4)
-                    throw new NullPointerException(String.format(
-                            "Question with id [%s] does not have 4 answers!",
-                            questionId
-                    ));
+                    if (answers.size() != 4)
+                        throw new NullPointerException(String.format(
+                                "Question with id [%s] does not have 4 answers!",
+                                questionId
+                        ));
 
-                if (correctAnswer == null)
-                    throw new NullPointerException(String.format(
-                            "Correct answer not found for id [%s] for question with id [%s]",
-                            correctAnswerId,
-                            questionId));
+                    if (correctAnswer == null)
+                        throw new NullPointerException(String.format(
+                                "Correct answer not found for id [%s] for question with id [%s]",
+                                correctAnswerId,
+                                questionId));
 
-                if (difficulty == null)
-                    throw new NullPointerException(String.format(
-                            "Difficulty not found for id [%s] for question with id [%s]",
-                            difficultyId,
-                            questionId));
+                    if (difficulty == null)
+                        throw new NullPointerException(String.format(
+                                "Difficulty not found for id [%s] for question with id [%s]",
+                                difficultyId,
+                                questionId));
 
-                results.add(new Question(questionId,
-                        cursor.getString(1),
-                        answers,
-                        correctAnswer,
-                        difficulty,
-                        cursor.getInt(2)));
+                    results.add(new Question(questionId,
+                            cursor.getString(1),
+                            answers,
+                            correctAnswer,
+                            difficulty,
+                            cursor.getInt(2)));
+                } while (cursor.moveToNext());
             }
         }
         return results;
@@ -417,5 +534,4 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         return set;
     }
-
 }
