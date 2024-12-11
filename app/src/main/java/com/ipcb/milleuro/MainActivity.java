@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,9 +32,14 @@ public class MainActivity extends AppCompatActivity {
         txtName= findViewById(R.id.Main_txtName);
 
         btnStart.setOnClickListener(view -> {
-            Intent openGame = new Intent(this, GameActivity.class);
-            openGame.putExtra("PlayerName", txtName.getText().toString());
-            startActivity(openGame);
+            if(txtName.getText().toString().isEmpty()){
+                Toast messageToast = Toast.makeText(MainActivity.this, "AADA", Toast.LENGTH_SHORT);
+                messageToast.show();
+            }else {
+                Intent openGame = new Intent(this, GameActivity.class);
+                openGame.putExtra("PlayerName", txtName.getText().toString());
+                startActivity(openGame);
+            }
         });
     }
 }

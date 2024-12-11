@@ -69,7 +69,7 @@ public class GameActivity extends AppCompatActivity {
         buttonList.add(btnAnswer3);
         buttonList.add(btnAnswer4);
 
-        txtName.setText(String.format("Bem vindo %s", getIntent().getStringExtra("PlayerName")));
+        txtName.setText(String.format("%s", getIntent().getStringExtra("PlayerName")));
 
         Log.d("GameActivity", String.valueOf(currentIndex));
         loadQuestion();
@@ -82,6 +82,8 @@ public class GameActivity extends AppCompatActivity {
         return questionsByDifficulty.subList(0, Math.min(count, questionsByDifficulty.size()));
     }
 
+    private int correctAnswerId;
+
     private void loadQuestion() {
         if (currentIndex >= selectedQuestions.size()) {
             finishGame();
@@ -89,14 +91,16 @@ public class GameActivity extends AppCompatActivity {
         }
 
         Question question = questions.get(currentIndex);
-        Log.d("GameActivity", question.toString());
+        Log.d("Question", question.toString());
         txtQuestion.setText(question.getQuestionText());
         txtDifficulty.setText(String.format("Dificuldade: %s", question.getDifficulty().getName()));
+
+        correctAnswerId = question.getCorrectAnswer().getId();
 
         // Prepara as respostas
         List<Answer> possibleAnswers = new ArrayList<>(question.getPossibleAnswers());
         Collections.shuffle(possibleAnswers);
-        Log.d("GameActivity", possibleAnswers.toString());
+        Log.d("Possible Answers", possibleAnswers.toString());
 
         for (int i = 0; i < 4; i++) {
             final Button button = buttonList.get(i);
@@ -107,11 +111,13 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void checkAnswer(Answer selectedAnswer) {
-        if (selectedAnswer.isCorrect(selectedAnswer.getId())) {
+        if (selectedAnswer.isCorrect(correctAnswerId)) {
+            Log.d("CheckAnswer", String.valueOf(correctAnswerId));
             currentIndex++;
             loadQuestion();
         } else {
             Log.e("GameActivity", "Resposta incorreta!");
+            Toast.makeText(this, "Resposta errada! Tente novamente.", Toast.LENGTH_SHORT).show();
         }
     }
 

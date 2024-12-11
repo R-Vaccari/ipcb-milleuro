@@ -24,8 +24,4 @@ public class Answer {
     public boolean isCorrect(int correctAnswerId) {
         return this.id == correctAnswerId;
     }
-
-    public void setAnswerText(String answerText) {
-        this.answerText = answerText;
-    }
 }

@@ -497,7 +497,6 @@ public class DBHelper extends SQLiteOpenHelper {
     private Answer getCorrectAnswerById(int id) {
         final SQLiteDatabase db = this.getReadableDatabase();
         try (Cursor cursor = db.rawQuery("SELECT * FROM " + ANSWER_TABLE + " WHERE id = " + id,
-
                 null)) {
             if (cursor.moveToFirst())
                 return new Answer(cursor.getInt(0),
