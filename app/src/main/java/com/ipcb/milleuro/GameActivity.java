@@ -26,12 +26,11 @@ public class GameActivity extends AppCompatActivity {
     TextView txtName, txtDifficulty, txtGrant, txtQuestion;
     List<Button> buttonList = new ArrayList<>(4);
     Button btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4;
-    List<Question> questions;
     List<Answer> answers;
     List<Difficulty> difficulties;
-    int currentIndex;
-    int totalQuestions = 15;
+    int currentIndex, gainedMoney = 0;
     List<Question> selectedQuestions = new ArrayList<>();
+    Question currentQuestion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +39,6 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
 
         try (DBHelper db = new DBHelper(this)){
-            questions = db.getQuestions();
             answers = db.getAnswers();
             difficulties = db.getDifficulties();
             selectedQuestions.addAll(getRandomQuestionsByDifficulty(1, 5, db));
@@ -56,7 +54,7 @@ public class GameActivity extends AppCompatActivity {
 
         txtName = findViewById(R.id.Game_txtPlayerName);
         txtDifficulty = findViewById(R.id.Game_txtDifficulty);
-        txtGrant = findViewById(R.id.Game_txtGrant);
+        txtGrant = findViewById(R.id.Game_txtGrant_Money);
         txtQuestion = findViewById(R.id.Game_txtQuestion);
 
         btnAnswer1 = findViewById(R.id.Game_btnAnswer1);
@@ -90,15 +88,17 @@ public class GameActivity extends AppCompatActivity {
             return;
         }
 
-        Question question = questions.get(currentIndex);
-        Log.d("Question", question.toString());
-        txtQuestion.setText(question.getQuestionText());
-        txtDifficulty.setText(String.format("Dificuldade: %s", question.getDifficulty().getName()));
+        txtGrant.setText(String.format("%s€", gainedMoney));
 
-        correctAnswerId = question.getCorrectAnswer().getId();
+        Question question = selectedQuestions.get(currentIndex);
+        currentQuestion = question;
+        Log.d("Question", currentQuestion.toString());
+        txtQuestion.setText(currentQuestion.getQuestionText());
+        txtDifficulty.setText(String.format("Dificuldade: %s", currentQuestion.getDifficulty().getName()));
+        correctAnswerId = currentQuestion.getCorrectAnswer().getId();
 
         // Prepara as respostas
-        List<Answer> possibleAnswers = new ArrayList<>(question.getPossibleAnswers());
+        List<Answer> possibleAnswers = new ArrayList<>(currentQuestion.getPossibleAnswers());
         Collections.shuffle(possibleAnswers);
         Log.d("Possible Answers", possibleAnswers.toString());
 
@@ -111,8 +111,9 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void checkAnswer(Answer selectedAnswer) {
-        if (selectedAnswer.isCorrect(correctAnswerId)) {
+        if (currentQuestion.isAnswerCorrect(selectedAnswer)) {
             Log.d("CheckAnswer", String.valueOf(correctAnswerId));
+            gainedMoney += currentQuestion.getValue();
             currentIndex++;
             loadQuestion();
         } else {
