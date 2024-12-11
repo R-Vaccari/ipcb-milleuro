@@ -32,6 +32,10 @@ public class Question {
                 '}';
     }
 
+    public boolean isAnswerCorrect(Answer answer) {
+        return answer.equals(correctAnswer);
+    }
+
     public int getValue() {
         return value;
     }
