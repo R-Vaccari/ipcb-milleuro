@@ -32,14 +32,31 @@ public class MainActivity extends AppCompatActivity {
         txtName= findViewById(R.id.Main_txtName);
 
         btnStart.setOnClickListener(view -> {
-            if(txtName.getText().toString().isEmpty()){
-                Toast messageToast = Toast.makeText(MainActivity.this, "AADA", Toast.LENGTH_SHORT);
-                messageToast.show();
-            }else {
+            String playerName = txtName.getText().toString().trim();
+
+            // Verificar se o campo está vazio
+            if (playerName.isEmpty()) {
+                Toast.makeText(this, "Ups... Necessita de introduzir um " +
+                        "nome de jogador.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Verificar se nome tem menos de 3 caracteres
+            if (playerName.length() < 3) {
+                Toast.makeText(this, "O nome deve ter pelo menos" +
+                        " 3 caracteres.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Verificar se o nome é numérico
+            if (playerName.matches("\\d+")) {
+                Toast.makeText(this, "O nome não pode ser um número.",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
                 Intent openGame = new Intent(this, GameActivity.class);
                 openGame.putExtra("PlayerName", txtName.getText().toString());
                 startActivity(openGame);
-            }
         });
     }
 }

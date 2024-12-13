@@ -1,5 +1,6 @@
 package com.ipcb.milleuro;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -25,12 +26,14 @@ public class GameActivity extends AppCompatActivity {
 
     TextView txtName, txtDifficulty, txtGrant, txtQuestion;
     List<Button> buttonList = new ArrayList<>(4);
-    Button btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4;
+    Button btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4, btnSwitchQuestion, btn5050, btnGiveUp;
     List<Answer> answers;
     List<Difficulty> difficulties;
     int currentIndex, gainedMoney = 0;
     List<Question> selectedQuestions = new ArrayList<>();
     Question currentQuestion;
+    private boolean switchQuestionIsUsed = false;
+    private boolean fiftyFiftyIsUsed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,16 +64,70 @@ public class GameActivity extends AppCompatActivity {
         btnAnswer2 = findViewById(R.id.Game_btnAnswer2);
         btnAnswer3 = findViewById(R.id.Game_btnAnswer3);
         btnAnswer4 = findViewById(R.id.Game_btnAnswer4);
+        btnSwitchQuestion = findViewById(R.id.Game_btnHelp1);
+        btn5050 = findViewById(R.id.Game_btnHelp2);
+        btnGiveUp = findViewById(R.id.Game_btnExit);
 
         buttonList.add(btnAnswer1);
         buttonList.add(btnAnswer2);
         buttonList.add(btnAnswer3);
         buttonList.add(btnAnswer4);
 
+        btnSwitchQuestion.setOnClickListener(view -> {
+            if (switchQuestionIsUsed || fiftyFiftyIsUsed) {
+                Toast.makeText(this, "Só pode usar uma ajuda por jogo.",
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                switchQuestion();
+                switchQuestionIsUsed = true;
+                disableAllHelps();
+            }
+        });
+
+        btn5050.setOnClickListener(view -> {
+            if (switchQuestionIsUsed || fiftyFiftyIsUsed) {
+                Toast.makeText(this, "Só pode usar uma ajuda por jogo.",
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                applyFiftyFifty();
+                fiftyFiftyIsUsed = true;
+                disableAllHelps();
+            }
+        });
+
+        btnGiveUp.setOnClickListener(view -> {
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("Desistir do Jogo")
+                    .setMessage("Quer realmente desistir do jogo e voltar para o ecrã inicial?")
+                    .setCancelable(false) // Impede a cena de fechar ao tocar fora do dialog
+                    .setPositiveButton("Sim", (dialog, id) -> {
+                        finish(); // Finalizar o jogo
+                        startActivity(new Intent(this, MainActivity.class));
+                    })
+                    .setNegativeButton("Não", (dialog, id) -> {
+                        dialog.dismiss();
+                    })
+                    .create()
+                    .show();
+        });
+
+
         txtName.setText(String.format("%s", getIntent().getStringExtra("PlayerName")));
 
         Log.d("GameActivity", String.valueOf(currentIndex));
         loadQuestion();
+    }
+
+    private void disableAllHelps() {
+        btnSwitchQuestion.setEnabled(false);
+        btn5050.setEnabled(false);
+    }
+
+
+    private void resetButtons() {
+        for (Button button : buttonList) {
+            button.setEnabled(true);
+        }
     }
 
 
@@ -82,11 +139,14 @@ public class GameActivity extends AppCompatActivity {
 
     private int correctAnswerId;
 
+    // Função para carregar as perguntas (O jogo em si) - Lucas
     private void loadQuestion() {
         if (currentIndex >= selectedQuestions.size()) {
             finishGame();
             return;
         }
+
+        resetButtons(); // Restart buttons after using 50/50
 
         txtGrant.setText(String.format("%s€", gainedMoney));
 
@@ -94,7 +154,8 @@ public class GameActivity extends AppCompatActivity {
         currentQuestion = question;
         Log.d("Question", currentQuestion.toString());
         txtQuestion.setText(currentQuestion.getQuestionText());
-        txtDifficulty.setText(String.format("Dificuldade: %s", currentQuestion.getDifficulty().getName()));
+        txtDifficulty.setText(String.format("Dificuldade: %s",
+                currentQuestion.getDifficulty().getName()));
         correctAnswerId = currentQuestion.getCorrectAnswer().getId();
 
         // Prepara as respostas
@@ -110,6 +171,71 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    // Função para a ajuda "50/50"
+    private void applyFiftyFifty() {
+        List<Button> incorrectButtons = new ArrayList<>();
+
+        // Identificar as respostas incorretas nos botões
+        for (Button button : buttonList) {
+            if (!button.getText().toString().equals(currentQuestion.getCorrectAnswer()
+                    .getAnswerText())) {
+                incorrectButtons.add(button);
+            }
+        }
+
+        // Verificar se há pelo menos duas respostas incorretas
+        if (incorrectButtons.size() < 2) {
+            Toast.makeText(this, "Não há respostas suficientes para aplicar 50/50.",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Remover duas respostas incorretas aleatoriamente
+        Collections.shuffle(incorrectButtons);
+        incorrectButtons.get(0).setEnabled(false);
+        incorrectButtons.get(0).setText("");
+        incorrectButtons.get(1).setEnabled(false);
+        incorrectButtons.get(1).setText("");
+
+        Toast.makeText(this, "50/50 aplicado! Duas respostas foram eliminadas.",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    // Função para a ajuda "Trocar Pergunta"
+    private void switchQuestion() {
+        try (DBHelper db = new DBHelper(this)) {
+            List<Question> questionsByDifficulty = db.getQuestionsByDifficulty(currentQuestion.getDifficulty().getDifficultyLevel());
+            questionsByDifficulty.remove(currentQuestion);
+
+            if (questionsByDifficulty.isEmpty()) {
+                Toast.makeText(this, "Não há mais perguntas disponíveis para troca.",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Collections.shuffle(questionsByDifficulty);
+            currentQuestion = questionsByDifficulty.get(0);
+
+            txtQuestion.setText(currentQuestion.getQuestionText());
+            txtDifficulty.setText(String.format("Dificuldade: %s",
+                    currentQuestion.getDifficulty().getName()));
+            correctAnswerId = currentQuestion.getCorrectAnswer().getId();
+
+            List<Answer> possibleAnswers = new ArrayList<>(currentQuestion.getPossibleAnswers());
+            Collections.shuffle(possibleAnswers);
+
+            for (int i = 0; i < 4; i++) {
+                final Button button = buttonList.get(i);
+                final Answer answer = possibleAnswers.get(i);
+                button.setText(answer.getAnswerText());
+                button.setOnClickListener(view -> checkAnswer(answer));
+            }
+
+            Toast.makeText(this, "Pergunta trocada!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Função para verificar a resposta escolhida - Lucas
     private void checkAnswer(Answer selectedAnswer) {
         if (currentQuestion.isAnswerCorrect(selectedAnswer)) {
             Log.d("CheckAnswer", String.valueOf(correctAnswerId));
@@ -117,8 +243,9 @@ public class GameActivity extends AppCompatActivity {
             currentIndex++;
             loadQuestion();
         } else {
-            Log.e("GameActivity", "Resposta incorreta!");
-            Toast.makeText(this, "Resposta errada! Tente novamente.", Toast.LENGTH_SHORT).show();
+            Log.e("CheckAnswer", "Resposta incorreta!");
+            Toast.makeText(this, "Resposta errada! Você ganhou " + gainedMoney + "€.", Toast.LENGTH_LONG).show();
+            finishGame();
         }
     }
 
