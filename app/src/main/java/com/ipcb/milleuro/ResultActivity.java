@@ -2,23 +2,43 @@ package com.ipcb.milleuro;
 
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import android.content.Intent;
+import android.widget.Button;
+import android.widget.TextView;
 
 public class ResultActivity extends AppCompatActivity {
+
+    Button btnRetry, btnMainMenu;
+    TextView txtResultMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_result);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+
+        txtResultMessage = findViewById(R.id.Result_txtMessage);
+        btnRetry = findViewById(R.id.Result_btnRetry);
+        btnMainMenu = findViewById(R.id.Result_btnMainMenu);
+
+        String playerName = getIntent().getStringExtra("PlayerName");
+        int finalScore = getIntent().getIntExtra("Score", 0);
+
+        txtResultMessage.setText(String.format("Fim de jogo! Parabéns %s!\nVocê ganhou %d€.", playerName, finalScore));
+
+        // Botão para reiniciar o jogo
+        btnRetry.setOnClickListener(view -> {
+            Intent intent = new Intent(this, GameActivity.class);
+            intent.putExtra("PlayerName", playerName);
+            startActivity(intent);
+            finish();
+        });
+
+        // Botão para voltar ao inicio
+        btnMainMenu.setOnClickListener(view -> {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
         });
     }
 }

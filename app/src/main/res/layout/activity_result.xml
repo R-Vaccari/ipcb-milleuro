@@ -8,7 +8,7 @@
     tools:context=".ResultActivity">
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/Result_txtMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Parabens, vagabundo!"
@@ -16,4 +16,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/Result_btnRetry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="Tentar Novamente"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Result_txtMessage" />
+
+    <Button
+        android:id="@+id/Result_btnMainMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Voltar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Result_btnRetry" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

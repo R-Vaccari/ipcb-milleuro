@@ -74,24 +74,24 @@ public class GameActivity extends AppCompatActivity {
         buttonList.add(btnAnswer4);
 
         btnSwitchQuestion.setOnClickListener(view -> {
-            if (switchQuestionIsUsed || fiftyFiftyIsUsed) {
+            if (switchQuestionIsUsed) {
                 Toast.makeText(this, "Só pode usar uma ajuda por jogo.",
                         Toast.LENGTH_SHORT).show();
             } else {
                 switchQuestion();
                 switchQuestionIsUsed = true;
-                disableAllHelps();
+                disableHelp(btnSwitchQuestion);
             }
         });
 
         btn5050.setOnClickListener(view -> {
-            if (switchQuestionIsUsed || fiftyFiftyIsUsed) {
+            if (fiftyFiftyIsUsed) {
                 Toast.makeText(this, "Só pode usar uma ajuda por jogo.",
                         Toast.LENGTH_SHORT).show();
             } else {
                 applyFiftyFifty();
                 fiftyFiftyIsUsed = true;
-                disableAllHelps();
+                disableHelp(btn5050);
             }
         });
 
@@ -118,11 +118,10 @@ public class GameActivity extends AppCompatActivity {
         loadQuestion();
     }
 
-    private void disableAllHelps() {
-        btnSwitchQuestion.setEnabled(false);
-        btn5050.setEnabled(false);
-    }
+    private void disableHelp(Button btn) {
+        btn.setEnabled(false);
 
+    }
 
     private void resetButtons() {
         for (Button button : buttonList) {
@@ -250,6 +249,11 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void finishGame() {
-        txtQuestion.setText("Fim do jogo! Parabéns VAGABUNDO!");
+        Intent intent = new Intent(this, ResultActivity.class);
+        intent.putExtra("PlayerName", getIntent().getStringExtra("PlayerName"));
+        intent.putExtra("Score", gainedMoney);
+        startActivity(intent);
+        finish();
     }
+
 }
