@@ -369,7 +369,6 @@ public class DBHelper extends SQLiteOpenHelper {
                 results.add(new Difficulty(cursor.getInt(0),
                     cursor.getInt(1),
                     cursor.getString(2)));
-            else return null;
         }
 
         return results;
@@ -381,52 +380,8 @@ public class DBHelper extends SQLiteOpenHelper {
             if (cursor.moveToFirst())
                 results.add(new Answer(cursor.getInt(0),
                     cursor.getString(1)));
-            else return null;
         }
 
-        return results;
-    }
-
-    public List<Question> getQuestions() throws NullPointerException {
-        List<Question> results = new ArrayList<>();
-        try (Cursor cursor = getAllFromTable(QUESTION_TABLE)) {
-            if (cursor.moveToFirst()) {
-                do {
-                    final int difficultyId = cursor.getInt(4);
-                    final int correctAnswerId = cursor.getInt(3);
-                    final int questionId = cursor.getInt(0);
-
-                    final List<Answer> answers = getAvailableAnswers(questionId);
-                    final Answer correctAnswer = getCorrectAnswerById(correctAnswerId);
-                    final Difficulty difficulty = getDifficultyById(difficultyId);
-
-                    if (answers.size() != 4)
-                        throw new NullPointerException(String.format(
-                                "Question with id [%s] does not have 4 answers!",
-                                questionId
-                        ));
-
-                    if (correctAnswer == null)
-                        throw new NullPointerException(String.format(
-                                "Correct answer not found for id [%s] for question with id [%s]",
-                                correctAnswerId,
-                                questionId));
-
-                    if (difficulty == null)
-                        throw new NullPointerException(String.format(
-                                "Difficulty not found for id [%s] for question with id [%s]",
-                                difficultyId,
-                                questionId));
-
-                    results.add(new Question(questionId,
-                            cursor.getString(1),
-                            answers,
-                            correctAnswer,
-                            difficulty,
-                            cursor.getInt(2)));
-                } while (cursor.moveToNext());
-            }
-        }
         return results;
     }
 
